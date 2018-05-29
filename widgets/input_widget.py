@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QWidget, QHBoxLayout, QLineEdit, QLabel, QScrollArea
 from PyQt5.Qt import QFrame
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
+from PyQt5.QtCore import Qt
 
 from recipes.recipe import FloatValue, IntegerValue
 
@@ -43,11 +44,12 @@ class InputWidget(QScrollArea):
         horizontal_layout.addStretch(1)
 
         input_widget = QLineEdit(widget)
+        input_widget.setAlignment(Qt.AlignRight)
+
         if isinstance(value, FloatValue):
             input_widget.setValidator(QDoubleValidator())
         elif isinstance(value, IntegerValue):
             input_widget.setValidator(QIntValidator())
-
 
         horizontal_layout.addWidget(input_widget)
 
@@ -61,8 +63,10 @@ class InputWidget(QScrollArea):
     @property
     def user_inputs(self):
         result = {}
+
         for key, widget in self._input_widgets.items():
             value_str = widget.text()
             value = self._inputs[key].convert_from_string(value_str)
             result[key] = value
+
         return result

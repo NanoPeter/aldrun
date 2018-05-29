@@ -1,8 +1,6 @@
 """
 
 """
-from enum import Enum
-from threading import Thread
 from datetime import datetime
 
 from threading import Event
@@ -80,6 +78,25 @@ class FloatValue(AbstractValue):
         return float(value)
 
 
+class SignalInterface:
+    """An typical
+    """
+    def emit_finished(self) -> None:
+        NotImplementedError()
+
+    def emit_started(self) -> None:
+        NotImplementedError()
+
+    def emit_stopped(self) -> None:
+        NotImplementedError()
+
+    def emit_status_message(self, message: str) -> None:
+        NotImplementedError()
+
+    def emit_update_process_value(self, value: int) -> None:
+        NotImplementedError()
+
+
 def logable(text=''):
     def outer_wrapper(foo):
         def inner_wrapper(self, *args, **kwargs):
@@ -89,14 +106,14 @@ def logable(text=''):
     return outer_wrapper
 
 
-def run_and_wait(foo, total_run_time: float=0):
+def run_and_wait(foo, total_run_time: float=0, sleep_function=sleep):
     def wrapper(*args, **kwargs):
         start_time = time()
         foo(*args, **kwargs)
         foo_run_time = time() - start_time
         time_to_wait = total_run_time - foo_run_time
         if time_to_wait > 0:
-            sleep(time_to_wait)
+            sleep_function(time_to_wait)
     return wrapper
 
 
@@ -104,19 +121,37 @@ class AbstractRecipe(ABC):
     """
 
     """
-    def __init__(self):
+    def __init__(self, mqtt_client, signal_interface: SignalInterface):
         self._stop_process = Event()
+
+        self._mqtt_client = mqtt_client
+        self._signal_interface = signal_interface
+
+        self._interrupt_event = Event()
 
     def __call__(self):
         self._stop_process.clear()
+        self._interrupt_event.clear()
+        self._signal_interface.emit_started()
         self._run()
+        self._signal_interface.emit_finished()
+
+    def stop(self):
+        self._stop_process.set()
+        self._interrupt_event.set()
+        self._signal_interface.emit_stopped()
 
     def _log(self, text):
-        print('{} - {}'.format(datetime.now().isoformat(), text))
+        message = '{} - {}'.format(datetime.now().isoformat(), text)
+        self._signal_interface.emit_status_message(text)
 
     @abstractmethod
     def _run(self):
         pass
+
+    @abstractmethod
+    def max_process_value(self):
+        return -1
 
     @staticmethod
     @abstractmethod
