@@ -17,7 +17,7 @@ class PlatinumALD(AbstractRecipe):
                  platinum_flush_wait:float=10,
                  oxygen_flow:float=100):
 
-        super().__init__(mqtt_client, signal_interface)
+        super().__init__(mqtt_client, signal_interface, logname='platinum-ald')
 
         mqtt_client.subscribe('ald/recipes/platinum/cmd')
         mqtt_client.message_callback_add('ald/recipes/platinum/cmd', self._cmd)

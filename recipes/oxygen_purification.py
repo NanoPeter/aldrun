@@ -12,7 +12,7 @@ class OxygenPurification(AbstractRecipe):
                  oxygen_wait:float=10,
                  oxygen_flow:float=80):
 
-        super().__init__(mqtt_client, signal_interface)
+        super().__init__(mqtt_client, signal_interface, logname='oxygen-purification')
 
         mqtt_client.subscribe('ald/recipes/oxygen_purification/cmd')
         mqtt_client.message_callback_add('ald/recipes/oxygen_purification/cmd', self._cmd)

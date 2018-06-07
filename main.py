@@ -14,6 +14,10 @@ from datetime import datetime
 
 from configparser import ConfigParser
 
+import os
+if not os.path.exists('logs'):
+    os.makedirs('logs')
+
 
 class QtSignalInterface(SignalInterface, QObject):
     finished = pyqtSignal()

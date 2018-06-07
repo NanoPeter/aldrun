@@ -121,11 +121,13 @@ class AbstractRecipe(ABC):
     """
 
     """
-    def __init__(self, mqtt_client, signal_interface: SignalInterface):
+    def __init__(self, mqtt_client, signal_interface: SignalInterface, logname='general'):
         self._stop_process = Event()
 
         self._mqtt_client = mqtt_client
         self._signal_interface = signal_interface
+
+        self._log_file = open('log/{:%Y-%m-%dT%H-%M}-{}.log'.format(datetime.now(), logname), 'a')
 
         self._interrupt_event = Event()
 
@@ -140,10 +142,13 @@ class AbstractRecipe(ABC):
         self._stop_process.set()
         self._interrupt_event.set()
         self._signal_interface.emit_stopped()
+        self._log_file.close()
 
     def _log(self, text):
         message = '{} - {}'.format(datetime.now().isoformat(), text)
         self._signal_interface.emit_status_message(text)
+        print(message, file=self._log_file)
+        self._log_file.flush()
 
     @abstractmethod
     def _run(self):
