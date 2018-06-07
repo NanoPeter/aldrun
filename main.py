@@ -221,13 +221,13 @@ class Main(QMainWindow):
         diff = datetime.now() - self._recipe_started_timestamp
 
         if value == 0:
-            self._estimated_end = None
+            estimated_end = None
         else:
-            self._estimated_end = datetime.now() + diff / value * max_value
+            estimated_end = datetime.now() + diff / value * max_value
 
         estimated_text = ''
-        if self._estimated_end is not None:
-            estimated_text = 'ETC: {:%H:%M}'.format(self._estimated_end)
+        if estimated_end is not None:
+            estimated_text = 'ETC: {:%H:%M}'.format(estimated_end) # estimated time of completion
 
         self._etc_label.setText(estimated_text)
 
