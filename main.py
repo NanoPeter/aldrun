@@ -12,6 +12,8 @@ from recipes.recipe import SignalInterface
 
 from datetime import datetime
 
+from configparser import ConfigParser
+
 
 class QtSignalInterface(SignalInterface, QObject):
     finished = pyqtSignal()
@@ -45,6 +47,9 @@ class Main(QMainWindow):
 
         self._running_recipe = None
         self._recipe_started_timestamp = None
+
+        self._config = ConfigParser()
+        self._config.read('config.cnf')
 
         self.__init_gui()
         self.__init_mqtt_client()
@@ -130,9 +135,11 @@ class Main(QMainWindow):
         self._mqtt_client.on_connect = self._on_connect
         self._mqtt_client.on_message = self._on_message
 
-        self._mqtt_client.username_pw_set('ald', 'ald2017')
+        mqtt_conf = self._config['MQTT']
+
+        self._mqtt_client.username_pw_set(mqtt_conf['username'], mqtt_conf['password'])
         try:
-            self._mqtt_client.connect('ald', 1883, 60)
+            self._mqtt_client.connect(mqtt_conf['address'], int(mqtt_conf['port']), int(mqtt_conf['timeout']))
         except ConnectionRefusedError:
             QMessageBox.warning(self, 'Connection Failed','Connection to MQTT Server failed')
             exit(0)
