@@ -127,7 +127,7 @@ class AbstractRecipe(ABC):
         self._mqtt_client = mqtt_client
         self._signal_interface = signal_interface
 
-        self._log_file = open('log/{:%Y-%m-%dT%H-%M}-{}.log'.format(datetime.now(), logname), 'a')
+        self._log_file = open('logs/{:%Y-%m-%dT%H-%M}-{}.log'.format(datetime.now(), logname), 'a')
 
         self._interrupt_event = Event()
 
