@@ -234,7 +234,8 @@ class Main(QMainWindow):
         if value == 0:
             estimated_end = None
         else:
-            estimated_end = datetime.now() + diff / value * max_value
+            estimated_duration = diff / value * max_value
+            estimated_end = self._recipe_started_timestamp + estimated_duration
 
         estimated_text = ''
         if estimated_end is not None:
