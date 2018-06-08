@@ -32,6 +32,8 @@ class InputWidget(QScrollArea):
             label = QLabel('Recipe does not require any inputs.', self)
             vertical_layout.addWidget(label)
 
+        vertical_layout.addStretch(1)
+
     def _create_input(self, short_name: str, value, parent=None):
         if not parent:
             parent = self

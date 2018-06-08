@@ -56,7 +56,10 @@ class Main(QMainWindow):
         self._config.read('config.cnf')
 
         self.__init_gui()
-        self.__init_mqtt_client()
+        if 'MQTT' in self._config:
+            self.__init_mqtt_client()
+        else:
+            self._recipe_combobox.setEnabled(True)
         self.__init_signal_interface()
 
     def __init_gui(self):
@@ -76,8 +79,6 @@ class Main(QMainWindow):
             widget.hide()
             central_layout.addWidget(widget)
             self._input_selectors[key] = widget
-
-        central_layout.addStretch(1)
 
         self._recipe_progress = QProgressBar(self)
         self._recipe_progress.setMaximum(100)
