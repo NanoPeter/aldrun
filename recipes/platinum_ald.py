@@ -193,3 +193,4 @@ class PlatinumALD(AbstractRecipe):
 
         self._signal_interface.emit_update_process_value(self._number_of_loops)
         self._close_all()
+
